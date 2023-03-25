@@ -10,7 +10,8 @@ export const userRouter = trpc.router({
   update: userProcedure
     .input(z.object({ name: z.string() }))
     .output(z.object({ name: z.string(), userId: z.string() }))
-    .mutation(({ input }) => {
+    .mutation(({ input, ctx }) => {
+      console.log(ctx.isAdmin);
       console.log(`Updating user: ${input.userId} to have name ${input.name}`);
       // pass will not be on the client as it's not in the output
       return { ...input, pass: "asd" };
