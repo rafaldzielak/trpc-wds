@@ -17,5 +17,3 @@ export const appRouter = trpc.router({
     }),
   users: userRouter,
 });
-
-export const mergedRouter = trpc.mergeRouters(appRouter, userRouter);

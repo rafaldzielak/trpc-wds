@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { appRouter, mergedRouter } from "./routers";
+import { appRouter } from "./routers";
 
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
 const app = express();
 
 app.use(cors({ origin: "http://localhost:5173" }));
-app.use("/trpc", createExpressMiddleware({ router: mergedRouter }));
+app.use("/trpc", createExpressMiddleware({ router: appRouter }));
 
 app.listen(3000, () => console.log("APP LISTENING ON PORT 3000"));
 
