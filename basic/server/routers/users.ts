@@ -7,8 +7,12 @@ export const userRouter = trpc.router({
   get: userProcedure.query(({ input }) => {
     return { id: input.userId };
   }),
-  update: userProcedure.input(z.object({ name: z.string() })).mutation(({ input }) => {
-    console.log(`Updating user: ${input.userId} to have name ${input.name}`);
-    return input;
-  }),
+  update: userProcedure
+    .input(z.object({ name: z.string() }))
+    .output(z.object({ name: z.string(), userId: z.string() }))
+    .mutation(({ input }) => {
+      console.log(`Updating user: ${input.userId} to have name ${input.name}`);
+      // pass will not be on the client as it's not in the output
+      return { ...input, pass: "asd" };
+    }),
 });
