@@ -18,6 +18,8 @@ async function main() {
   console.log(user);
   const updatedUser = await client.users.update.mutate({ userId: "123", name: "Rafa" });
   console.log(updatedUser);
+  const secretData = await client.secretData.query();
+  console.log(secretData);
 }
 
 main();
