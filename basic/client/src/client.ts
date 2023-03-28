@@ -1,14 +1,18 @@
-import { createTRPCProxyClient, httpBatchLink, loggerLink } from "@trpc/client";
+import { createTRPCProxyClient, createWSClient, httpBatchLink, loggerLink, splitLink, wsLink } from "@trpc/client";
 import { AppRouter } from "../../server/api";
 
 const client = createTRPCProxyClient<AppRouter>({
   links: [
-    loggerLink(),
-    // http link is last
-    // httpBatchLink merges multiple requests into one, to avoid it, there's httpLink
-    httpBatchLink({
-      url: "http://localhost:3000/trpc",
-      headers: { Authorization: "TOKEN" },
+    // allows to make one link or another based on a condition
+    splitLink({
+      condition: (operation) => operation.type === "subscription",
+      true: wsLink({ client: createWSClient({ url: "ws://localhost:3000/trpc" }) }),
+      // http link is last
+      // httpBatchLink merges multiple requests into one, to avoid it, there's httpLink
+      false: httpBatchLink({
+        url: "http://localhost:3000/trpc",
+        headers: { Authorization: "TOKEN" },
+      }),
     }),
   ],
 });
@@ -26,4 +30,13 @@ async function main() {
   console.log(secretData);
 }
 
+async function runWebSocket() {
+  const connection = client.users.onUpdate.subscribe(undefined, {
+    onData: (id) => console.log("DATA UPDATED", id),
+  });
+
+  // connection.unsubscribe()
+}
+
 main();
+runWebSocket();
